@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: Buzylane
+Version: 0.1
+Summary: This is a trial system
+Home-page: https://github.com/buzylane/tkinter_trial.git
+Author: STANLEY
+Author-email: workbuzylane@gmail.com
+Description-Content-Type: text/markdown
+Requires-Dist: psycopg2
