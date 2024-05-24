@@ -17,17 +17,36 @@ global_username = None
 # Function to update the script from the GitHub repository
 def update_script():
     try:
-        # Change directory to the script's directory
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        os.chdir(script_dir)
+        # Ensure the current directory is a git repository
+        if not os.path.isdir('.git'):
+            print("No git repository found. Skipping update.")
+            return
 
-        # Pull the latest changes from the repository
-        subprocess.check_call(['git', 'pull'])
-        print("Successfully updated the script from GitHub repository.")
+        # Fetch the latest changes from the repository
+        subprocess.check_call(['git', 'fetch'], cwd=os.path.dirname(os.path.realpath(__file__)))
+
+        # Change 'master' to 'main' if that's your default branch
+        branch = 'main'
+
+        # Check if there are updates
+        local_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
+                                               cwd=os.path.dirname(os.path.realpath(__file__))).strip()
+        remote_commit = subprocess.check_output(['git', 'rev-parse', f'origin/{branch}'],
+                                                cwd=os.path.dirname(os.path.realpath(__file__))).strip()
+
+        if local_commit != remote_commit:
+            print("New updates found. Updating...")
+            subprocess.check_call(['git', 'pull'], cwd=os.path.dirname(os.path.realpath(__file__)))
+            print("Update successful. Restarting application.")
+            os.execv(__file__, sys.argv)  # Restart the application
+        else:
+            print("No updates found.")
+
     except subprocess.CalledProcessError as e:
         print(f"Failed to update the script. Error: {e}")
 
-# Call the update function at the beginning
+
+# Optionally, call the update function at application startup
 update_script()
 
 # Database connection parameters
